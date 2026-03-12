@@ -10,41 +10,38 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async create(document: Omit<TDocument, '_id'>): Promise<TDocument> {
     const createdDocument = new this.model({
       ...document,
-      _id: Types.ObjectId,
+      _id: new Types.ObjectId(),
     });
 
     return (await createdDocument.save()).toJSON() as unknown as TDocument;
   }
 
   async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
-    const document = await this.model
-      .findOne(filterQuery)
-      .lean<TDocument>(true);
+    const document = await this.model.findOne(filterQuery, {}, { lean: true });
 
     if (!document) {
       this.logger.warn(`Document not found for filter:`, filterQuery);
       throw new NotFoundException('Document not found.');
-    }
+    } 
 
-    return document;
+    return document as TDocument;
   }
 
   async findOneAndUpdate(
     filterQuery: FilterQuery<TDocument>,
     update: UpdateQuery<TDocument>,
   ): Promise<TDocument> {
-    const document = await this.model
-      .findOneAndUpdate(filterQuery, update, {
-        new: true,
-      })
-      .lean<TDocument>(true);
+    const document = await this.model.findOneAndUpdate(filterQuery, update, {
+      new: true,
+      lean: true,
+    });
 
     if (!document) {
       this.logger.warn(`Document not found for filter:`, filterQuery);
       throw new NotFoundException('Document not found.');
     }
 
-    return document;
+    return document as TDocument;
   }
 
   async find(): Promise<TDocument[]> {
@@ -54,6 +51,13 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async findOneAndDelete(
     filterQuery: FilterQuery<TDocument>,
   ): Promise<TDocument> {
+    const document = await this.model.findOne(filterQuery, {}, { lean: true });
+
+    if (!document) {
+      this.logger.warn(`Document not found for filter:`, filterQuery);
+      throw new NotFoundException('Document not found.');
+    }
+
     return await this.model.findOneAndDelete(filterQuery);
   }
 }
