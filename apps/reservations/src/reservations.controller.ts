@@ -7,19 +7,24 @@ import {
   Param,
   Delete,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
-import { CurrentUser, JwtAuthGuard, userDto } from '@app/common';
+import { CurrentUser, JwtAuthGuard, PAYMENTS_SERVICE, userDto } from '@app/common';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('reservations')
 export class ReservationsController {
-  constructor(private readonly reservationsService: ReservationsService) {}
+  constructor(private readonly reservationsService: ReservationsService,
+    @Inject(PAYMENTS_SERVICE) readonly paymentClient: ClientProxy,
+  ) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createReservationDto: CreateReservationDto, @CurrentUser() user: userDto) {
+    console.log('user', user)
     return this.reservationsService.create(createReservationDto, user._id);
   }
 
