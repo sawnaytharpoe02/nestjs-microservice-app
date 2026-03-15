@@ -1,36 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { ReservationRepository } from './reservations.repository';
+import { ClientProxy } from '@nestjs/microservices';
+import { map } from 'rxjs';
+import { PAYMENTS_SERVICE } from '@app/common';
 
 @Injectable()
 export class ReservationsService {
-  constructor(private readonly reservationRepo: ReservationRepository) { }
+  constructor(private readonly reservationRepo: ReservationRepository,
+    @Inject(PAYMENTS_SERVICE) private readonly paymentClient: ClientProxy
+  ) { }
 
   create(createReservationDto: CreateReservationDto, userId: string) {
-    return this.reservationRepo.create({
-      ...createReservationDto,
-      timestamp: new Date(),
-      userId
-    });
+    return this.paymentClient.send('create_charage', createReservationDto.charge).pipe(
+      map((res) => {
+        console.log('stripe res', res)
+        return this.reservationRepo.create({
+          ...createReservationDto,
+          timestamp: new Date(),
+          invoiceId: res.id,
+          userId
+        });
+      })
+    )
   }
 
-  findAll() {
-    return this.reservationRepo.find();
+  async findAll() {
+    return await this.reservationRepo.find();
   }
 
-  findOne(_id: string) {
-    return this.reservationRepo.findOne({ _id });
+  async findOne(_id: string) {
+    return await this.reservationRepo.findOne({ _id });
   }
 
-  update(_id: string, updateReservationDto: UpdateReservationDto) {
-    return this.reservationRepo.findOneAndUpdate(
+  async update(_id: string, updateReservationDto: UpdateReservationDto) {
+    return await this.reservationRepo.findOneAndUpdate(
       { _id },
       { $set: updateReservationDto },
     );
   }
 
-  remove(_id: string) {
-    return this.reservationRepo.findOneAndDelete({ _id });
+  async remove(_id: string) {
+    return await this.reservationRepo.findOneAndDelete({ _id });
   }
 }

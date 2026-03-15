@@ -17,13 +17,11 @@ import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('reservations')
 export class ReservationsController {
-  constructor(private readonly reservationsService: ReservationsService,
-    @Inject(PAYMENTS_SERVICE) readonly paymentClient: ClientProxy,
-  ) { }
+  constructor(private readonly reservationsService: ReservationsService) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createReservationDto: CreateReservationDto, @CurrentUser() user: userDto) {
+  async create(@Body() createReservationDto: CreateReservationDto, @CurrentUser() user: userDto) {
     console.log('user', user)
     return this.reservationsService.create(createReservationDto, user._id);
   }
