@@ -1,6 +1,8 @@
-import { CreateChargeDto } from '@app/common';
-import { Injectable } from '@nestjs/common';
+import { CreateChargeDto, NOTIFICATIONS_SERVICE } from '@app/common';
+import { CreatePaymentChargeDto } from '@app/common/dto/create-payment-charge.dto';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ClientProxy } from '@nestjs/microservices';
 import Stripe from 'stripe';
 
 @Injectable()
@@ -10,9 +12,11 @@ export class PaymentsService {
   });
 
 
-  constructor(private readonly configService: ConfigService) { }
+  constructor(private readonly configService: ConfigService,
+    @Inject(NOTIFICATIONS_SERVICE) private readonly notificationClient: ClientProxy
+  ) { }
 
-  async createCharge({ amount }: CreateChargeDto) {
+  async createCharge({ email, amount }: CreatePaymentChargeDto) {
     // const paymentMethod = await this.stripe.paymentMethods.create({
     //   type: 'card',
     //   card,
@@ -31,6 +35,8 @@ export class PaymentsService {
         allow_redirects: 'never'
       }
     })
+
+    this.notificationClient.emit('notify_email', {email})
 
     return payemntIntent;
   }
