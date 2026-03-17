@@ -13,7 +13,7 @@ export class ReservationsService {
   ) { }
 
   create(createReservationDto: CreateReservationDto, {email, _id:userId}: userDto) {
-    return this.paymentClient.send('create_charage', createReservationDto.charge).pipe(
+    return this.paymentClient.send('create_charage', {...createReservationDto.charge, email}).pipe(
       map((res) => {
         console.log('stripe res', res)
         return this.reservationRepo.create({
