@@ -1,23 +1,28 @@
-FROM node:alpine as development
+FROM node:alpine AS development
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+COPY tsconfig.json tsconfig.json
+COPY nest-cli.json nest-cli.json
+COPY apps/payments/package.json apps/payments/package.json
 
-RUN npm install
+COPY apps/payments apps/payments
+COPY libs libs
 
-COPY . .
+RUN npm install -r
 
-RUN npm run build
+RUN npm run build payments
 
-FROM node:alpine as production
+FROM node:alpine AS production
 
 ARG NODE_ENV=production
-ENV NODE_ENV={NODE_ENV}
+ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+COPY apps/payments/package.json apps/payments/package.json
 
 RUN npm install --prod
 
