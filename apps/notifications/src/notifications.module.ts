@@ -10,7 +10,11 @@ import { LoggerModule } from '@app/common';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        PORT: Joi.string().required()
+        PORT: Joi.string().required(),
+        GOOGLE_OAUTH_CLIENT_ID: Joi.string().required(),
+        GOOGLE_OAUTH_CLIENT_SECRET: Joi.string().required(),
+        GOOGLE_OAUTH_REFRESH_TOKEN: Joi.string().required(),
+        SMTP_USER: Joi.string().required()
       })
     }),
     LoggerModule
@@ -18,4 +22,4 @@ import { LoggerModule } from '@app/common';
   controllers: [NotificationsController],
   providers: [NotificationsService],
 })
-export class NotificationsModule {}
+export class NotificationsModule { }
