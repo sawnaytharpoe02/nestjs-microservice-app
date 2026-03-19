@@ -28,7 +28,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY apps/auth/package.json apps/auth/package.json
 
-RUN npm install --prod
+RUN npm install --prod --legacy-peer-deps
 
 COPY --from=development /usr/src/app/dist ./dist
 

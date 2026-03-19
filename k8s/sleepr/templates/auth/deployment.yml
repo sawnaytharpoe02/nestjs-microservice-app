@@ -17,3 +17,9 @@ spec:
       containers:
         - image: asia-southeast1-docker.pkg.dev/sleepr-490515/auth/uat
           name: auth
+          env:
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: connectionString
