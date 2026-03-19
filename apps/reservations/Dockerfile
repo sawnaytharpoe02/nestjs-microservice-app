@@ -6,10 +6,10 @@ COPY package*.json ./
 COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 
-RUN npm install 
-
 COPY apps/reservations apps/reservations
 COPY libs libs
+
+RUN npm install -r
 
 RUN npm run build reservations
 
