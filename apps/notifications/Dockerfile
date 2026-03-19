@@ -10,7 +10,9 @@ COPY apps/notifications/package.json apps/notifications/package.json
 COPY apps/notifications apps/notifications
 COPY libs libs
 
-RUN npm install --legacy-peer-deps -r
+RUN npm install --legacy-peer-deps
+
+RUN cd apps/notifications && npm install --legacy-peer-deps
 
 RUN npm run build notifications
 

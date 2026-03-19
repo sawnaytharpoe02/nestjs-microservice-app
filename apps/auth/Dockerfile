@@ -10,7 +10,11 @@ COPY apps/auth/package.json apps/auth/package.json
 COPY apps/auth apps/auth
 COPY libs libs
 
-RUN npm install -r
+# Install root dependencies
+RUN npm install --legacy-peer-deps
+
+# Install auth-specific dependencies (jwt, passport, etc.)
+RUN cd apps/auth && npm install --legacy-peer-deps
 
 RUN npm run build auth
 

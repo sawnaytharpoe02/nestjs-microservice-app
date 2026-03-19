@@ -10,7 +10,9 @@ COPY apps/payments/package.json apps/payments/package.json
 COPY apps/payments apps/payments
 COPY libs libs
 
-RUN npm install -r
+RUN npm install --legacy-peer-deps
+
+RUN cd apps/payments && npm install --legacy-peer-deps
 
 RUN npm run build payments
 
