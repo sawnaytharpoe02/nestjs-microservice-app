@@ -62,7 +62,7 @@ steps:
       ["push", "asia-southeast1-docker.pkg.dev/sleepr-490515/notifications/uat"]
 
 
-  options:
-    logging: CLOUD_LOGGING_ONLY
+options:
+  logging: CLOUD_LOGGING_ONLY
 
-  serviceAccount: 'projects/sleepr-490515/serviceAccounts/797826287105-compute@developer.gserviceaccount.com'
+serviceAccount: 'projects/sleepr-490515/serviceAccounts/797826287105-compute@developer.gserviceaccount.com'
